@@ -1,0 +1,158 @@
+body {
+  margin: 0;
+}
+
+/* === HEADING === */
+
+.title h1 {
+  position: relative;
+  font-family: "Raleway", sans-serif;
+  font-weight: 300;
+  font-size: 40px;
+  text-align: center;
+  text-transform: capitalize;
+  color: rgb(43, 69, 86);
+}
+
+.title h1:after {
+  display: flex;
+  align-items: center;
+  height: 1px;
+  content: "";
+  background-color: #c40303;
+}
+
+.title span {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  line-height: 3em;
+  padding-left: 0.25em;
+  color: rgba(0, 0, 0, 0.4);
+  padding-bottom: 10px;
+}
+/* === END HEADING === */
+
+/* === TRAFFIC LIGHT === */
+.traffic-light-container {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+img {
+  margin: 30px;
+  height: 600px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  transition: box-shadow 0.5s;
+}
+/* === END TRAFFIC LIGHT === */
+
+/* === BUTTONS === */
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: -11px;
+}
+
+button {
+  padding: 0.6em 2em;
+  border: none;
+  outline: none;
+  color: rgb(255, 255, 255);
+  cursor: pointer;
+  position: relative;
+  text-transform: capitalize;
+  z-index: 0;
+}
+
+button:before {
+  content: "";
+  background: linear-gradient(
+    45deg,
+    #7c0d0d,
+    #077298,
+    #e4e26e,
+    #ddea30,
+    #1dbb8c,
+    #196ba196,
+    #cf045c,
+    #d03c68
+  );
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  background-size: 400%;
+  z-index: -1;
+  filter: blur(5px);
+  -webkit-filter: blur(5px);
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  animation: glowing-button 20s linear infinite;
+  transition: opacity 0.3s ease-in-out;
+}
+
+@keyframes glowing-button {
+  0% {
+    background-position: 0 0;
+  }
+  50% {
+    background-position: 400% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
+button:after {
+  z-index: -1;
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #bbbbbb;
+  left: 0;
+  top: 0;
+  border-radius: 4px;
+}
+
+button:hover:before {
+  opacity: 0.5;
+}
+/* === END BUTTONS === */
+
+/* === TODO: remove ===
+.light {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+}
+
+.red {
+  background-color: rgba(173, 10, 10, 0.84);
+}
+
+.yellow {
+  background-color: yellow;
+}
+
+.green {
+  background-color: rgb(17, 100, 17);
+}
+
+.active {
+  box-shadow: 0 0 20px yellow;
+}
+
+<div
+  className={`light red ${currentState === "red" ? "active" : ""}`}
+></div>
+<div
+  className={`light yellow ${currentState === "yellow" ? "active" : ""}`}
+></div>
+<div
+  className={`light green ${currentState === "green" ? "active" : ""}`}
+></div> */
