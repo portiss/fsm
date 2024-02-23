@@ -5,53 +5,58 @@ import red from "./assets/red.png";
 import yellow from "./assets/yellow.png";
 import none from "./assets/none.png";
 
-enum Color {
-  RED = "red",
-  YELLOW = "yellow",
-  GREEN = "green",
-  NONE = "none",
-}
+const Color = {
+  RED: "red",
+  YELLOW: "yellow",
+  GREEN: "green",
+  NONE: "none",
+} as const;
 
-enum ActionEvent {
-  START = "start",
-  CHANGE = "change",
-  STOP = "stop",
-}
+const Action = {
+  START: "start",
+  CHANGE: "change",
+  STOP: "stop",
+} as const;
+
+type LightState = (typeof Color)[keyof typeof Color];
+
+//type ActionEvent = (typeof Action)[keyof typeof Action];
 
 const stateToImageMapping: Record<string, string> = {
   [Color.RED]: red,
   [Color.YELLOW]: yellow,
   [Color.GREEN]: green,
-  [Color.NONE]: none,
+  none: none,
 };
 
 const TrafficLight: React.FC = () => {
-  const [currentState, setCurrentState] = useState<string>(Color.NONE);
+  const [currentState, setCurrentState] = useState<LightState>(Color.NONE);
   const [automaticMode, setAutomaticMode] = useState<boolean>(false);
 
-  const handleTransition = (nextState: string): void => {
+  const handleTransition = (nextState: LightState): void => {
     setCurrentState(nextState);
   };
+
   const trafficLightFSM = new FSM(Color.NONE, handleTransition);
 
-  trafficLightFSM.addTransition(Color.NONE, ActionEvent.START, Color.GREEN);
-  trafficLightFSM.addTransition(Color.GREEN, ActionEvent.CHANGE, Color.YELLOW);
-  trafficLightFSM.addTransition(Color.YELLOW, ActionEvent.CHANGE, Color.RED);
-  trafficLightFSM.addTransition(Color.RED, ActionEvent.CHANGE, Color.GREEN);
+  trafficLightFSM.addTransition(Color.NONE, Action.START, Color.GREEN);
+  trafficLightFSM.addTransition(Color.GREEN, Action.CHANGE, Color.YELLOW);
+  trafficLightFSM.addTransition(Color.YELLOW, Action.CHANGE, Color.RED);
+  trafficLightFSM.addTransition(Color.RED, Action.CHANGE, Color.GREEN);
 
   useEffect(() => {
     let timerId: NodeJS.Timeout;
 
     const handleTimeout = () => {
       timerId = setTimeout(() => {
-        trafficLightFSM.transition(ActionEvent.CHANGE);
+        trafficLightFSM.transition(Action.CHANGE);
         handleTimeout();
-      }, 2000);
+      }, 1800);
     };
 
     if (automaticMode) {
       setCurrentState(Color.NONE);
-      trafficLightFSM.transition(ActionEvent.START);
+      trafficLightFSM.transition(Action.START);
       handleTimeout();
     }
 
@@ -69,25 +74,29 @@ const TrafficLight: React.FC = () => {
     setAutomaticMode(false);
   };
 
-  const getImageByColor = (Color: string) => {
-    if (!stateToImageMapping[Color]) {
-      throw `Color:${Color} not found`;
+  const getImageByColor = (color: LightState) => {
+    if (!stateToImageMapping[color]) {
+      throw new Error(`Color:${color} not found`);
     }
-    return stateToImageMapping[Color];
+    return stateToImageMapping[color];
   };
 
   return (
     <div data-testid="traffic-light" className="traffic-light-container">
-      <div className="title">
+      <div className="title" data-testid="title">
         <h1>
           Traffic Light
           <span>Finite State Machine</span>
         </h1>
       </div>
-      <img data-testid="img" src={getImageByColor(currentState)} />
+      <img
+        data-testid="img"
+        src={getImageByColor(currentState)}
+        alt={`Traffic light is ${currentState}`}
+      />
       <div className="buttons" data-testid="buttons">
         <button data-testid="start-stop-button" onClick={handleStartStop}>
-          {automaticMode ? ActionEvent.STOP : ActionEvent.START}
+          {automaticMode ? Action.STOP : Action.START}
         </button>
         <button data-testid="reset-button" onClick={handleReset}>
           Reset
