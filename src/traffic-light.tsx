@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import FSM from "./fsm/finite-state-machine";
 import green from "./assets/green.png";
 import red from "./assets/red.png";
@@ -9,6 +9,7 @@ const Color = {
   RED: "red",
   YELLOW: "yellow",
   GREEN: "green",
+  PINK: "pink",
   NONE: "none",
 } as const;
 
@@ -20,8 +21,6 @@ const Action = {
 
 type LightState = (typeof Color)[keyof typeof Color];
 
-//type ActionEvent = (typeof Action)[keyof typeof Action];
-
 const stateToImageMapping: Record<string, string> = {
   [Color.RED]: red,
   [Color.YELLOW]: yellow,
@@ -32,6 +31,7 @@ const stateToImageMapping: Record<string, string> = {
 const TrafficLight: React.FC = () => {
   const [currentState, setCurrentState] = useState<LightState>(Color.NONE);
   const [automaticMode, setAutomaticMode] = useState<boolean>(false);
+  const errorRef = useRef<string>("");
 
   const handleTransition = (nextState: LightState): void => {
     setCurrentState(nextState);
@@ -66,6 +66,7 @@ const TrafficLight: React.FC = () => {
   }, [automaticMode]);
 
   const handleStartStop = (): void => {
+    errorRef.current = "";
     setAutomaticMode((prev) => !prev);
   };
 
@@ -76,7 +77,8 @@ const TrafficLight: React.FC = () => {
 
   const getImageByColor = (color: LightState) => {
     if (!stateToImageMapping[color]) {
-      throw new Error(`Color:${color} not found`);
+      errorRef.current = `Invalid state: ${color}`;
+      return stateToImageMapping[Color.NONE];
     }
     return stateToImageMapping[color];
   };
@@ -101,6 +103,9 @@ const TrafficLight: React.FC = () => {
         <button data-testid="reset-button" onClick={handleReset}>
           Reset
         </button>
+        {currentState === "pink" && ( //TEST: pink is not a valid state
+          <span style={{ color: "red" }}>{errorRef.current}</span>
+        )}
       </div>
     </div>
   );
